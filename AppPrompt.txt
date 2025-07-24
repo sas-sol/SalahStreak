@@ -1,0 +1,91 @@
+Create a web-based Attendance Tracker System using .NET Core 9.0.
+
+🔧 Architecture:
+- Follow Clean Architecture: (Domain, Application, Infrastructure, Web)
+- Use Entity Framework Core with SQLite (for simplicity)
+- Use Tailwind CSS or Bootstrap for UI (lightweight design)
+- Assume maximum 1000 participants, optimized for small-scale POC
+
+🎯 Core Features:
+
+1. **Participant Registration**
+   - Web-based form to enroll participants with fields:
+     - Full Name, Age, Gender, Phone, Email, Auto-generated Participant ID, Parent Name, Parent CNIC
+   - On registration, participant is auto-assigned to an **age group**, based on admin-defined ranges
+   - Admin UI to manage age groups: add, update, delete, and reassign participants
+   - Support group reassignment without data loss
+
+2. **Biometric Integration**
+   - Integrate with **BioTime API** (ZKTeco server)
+   - **Pull-based polling** (scheduled task every N minutes)
+   - Match biometric logs to registered participants using their unique ID
+   - Store all raw biometric check-ins (timestamp, device ID, participant ID)
+
+3. **Timesheet Calendar System**
+   - Admin uploads or configures a calendar of timestamps (5 max per day)
+     - Can upload via CSV or enter manually
+     - Each timestamp has a **± configurable window** (e.g., ±30 minutes)
+     - Calendar can be set for 1 day, 1 week, or full month
+   - Use 24-hour format strictly (e.g., 0515, 2130)
+
+4. **Attendance Scoring**
+   - For each timestamp, if participant checks in within the valid window → score +1
+   - Max score: 5 per day × 40 days = 200
+   - If window is modified later, re-evaluate scores accordingly
+   - Record **late check-ins** even if out of range (for auditing)
+   - **Handle duplicates** by picking the check-in **closest to the expected timestamp**
+
+5. **Rounds & Winners Pool**
+   - 40-day attendance cycle = 1 "round"
+   - Participants scoring **195 or more** are placed into the **Winners Pool**
+   - Winners Pool is separated by Age Group
+   - Round duration should be configurable (default: 40 days)
+
+6. **Rewards System**
+   - Admin UI to configure rewards per age group
+   - Rewards include: title, description, image, quantity, delivery status (pending/sent)
+   - Rewards are **not linked to individual participants** directly—just age group winners
+
+7. **Dashboards**
+   - **Admin Dashboard**:
+     - Total participants
+     - Group-wise stats
+     - Top scorers
+     - Daily attendance overview
+     - Filter by group/date/status
+   - **Participant Dashboard**:
+     - View personal check-ins
+     - View earned points
+     - View position in leaderboard within age group
+     - Cannot modify any data
+
+8. **Notifications (Optional)**
+   - Add SMS reminder system (before each timestamp)
+   - Implement logic and wiring for Twilio or similar
+   - **Comment out the actual send call** in POC
+
+9. **Authentication and Roles**
+   - Two roles: `Admin`, `Participant`
+   - Admin: full control over system
+   - Participant: view-only access to personal stats
+
+10. **Data Integrity**
+   - Keep all raw biometric logs intact
+   - Recalculate scores dynamically based on current time window configuration
+   - No hard deletes — mark as inactive where needed
+
+🔄 Sample Use Case Flow:
+- Admin creates age groups and uploads attendance calendar
+- Participants register and get synced with biometric system
+- Attendance is fetched periodically from BioTime
+- System scores attendance, logs events, updates leaderboards
+- Admin views dashboard, configures rewards, and finalizes winners pool
+
+💡 Assumptions:
+- Local time only (no UTC conversion)
+- SQLite used for simplicity
+- No high-concurrency or scale required
+- Commented out SMS logic for potential activation later
+
+Build the core models, logic, admin UI, and participant dashboards. You can stub out the BioTime API using mock data initially.
+
