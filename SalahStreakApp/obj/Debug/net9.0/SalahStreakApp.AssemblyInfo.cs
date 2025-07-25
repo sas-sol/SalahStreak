@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SalahStreakApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c0116a7bd471a8196cc1c8ac2e6bc76b278a9c9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+780f05ca4d41edbd4c8a5c4b926c6922a012df8a")]
 [assembly: System.Reflection.AssemblyProductAttribute("SalahStreakApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SalahStreakApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

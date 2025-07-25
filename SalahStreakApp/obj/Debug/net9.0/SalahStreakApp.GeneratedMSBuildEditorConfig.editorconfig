@@ -32,12 +32,152 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AgeGroup/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWdlR3JvdXBcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AgeGroup/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWdlR3JvdXBcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AgeGroup/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWdlR3JvdXBcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AgeGroup/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWdlR3JvdXBcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AgeGroup/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWdlR3JvdXBcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AttendanceCalendar/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZUNhbGVuZGFyXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AttendanceCalendar/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZUNhbGVuZGFyXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AttendanceCalendar/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZUNhbGVuZGFyXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AttendanceCalendar/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZUNhbGVuZGFyXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AttendanceCalendar/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZUNhbGVuZGFyXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AttendanceScore/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVNjb3JlXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AttendanceScore/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVNjb3JlXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AttendanceScore/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVNjb3JlXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AttendanceScore/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVNjb3JlXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/AttendanceScore/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVNjb3JlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/BiometricLog/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmlvbWV0cmljTG9nXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/BiometricLog/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmlvbWV0cmljTG9nXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/BiometricLog/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmlvbWV0cmljTG9nXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/BiometricLog/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmlvbWV0cmljTG9nXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/BiometricLog/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmlvbWV0cmljTG9nXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Participant/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFydGljaXBhbnRcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Participant/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFydGljaXBhbnRcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Participant/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFydGljaXBhbnRcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Participant/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFydGljaXBhbnRcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Participant/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFydGljaXBhbnRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Reward/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmV3YXJkXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Reward/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmV3YXJkXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Reward/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmV3YXJkXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Reward/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmV3YXJkXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Reward/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmV3YXJkXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Round/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm91bmRcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Round/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm91bmRcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Round/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm91bmRcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Round/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm91bmRcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Round/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm91bmRcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Shared/Error.cshtml]
@@ -50,6 +190,26 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Winner/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2lubmVyXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Winner/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2lubmVyXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Winner/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2lubmVyXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Winner/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2lubmVyXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/Winner/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2lubmVyXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/DELL/Documents/repos/SalahStreak/salahstreakapp/Views/_ViewImports.cshtml]

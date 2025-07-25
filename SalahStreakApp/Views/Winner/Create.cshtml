@@ -1,0 +1,71 @@
+@model SalahStreakApp.Models.Winner
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Create</title>
+</head>
+<body>
+
+<h4>Winner</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="RoundId" class="control-label"></label>
+                <select asp-for="RoundId" class ="form-control" asp-items="ViewBag.RoundId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ParticipantId" class="control-label"></label>
+                <select asp-for="ParticipantId" class ="form-control" asp-items="ViewBag.ParticipantId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="AgeGroupId" class="control-label"></label>
+                <select asp-for="AgeGroupId" class ="form-control" asp-items="ViewBag.AgeGroupId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="FinalScore" class="control-label"></label>
+                <input asp-for="FinalScore" class="form-control" />
+                <span asp-validation-for="FinalScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RankInAgeGroup" class="control-label"></label>
+                <input asp-for="RankInAgeGroup" class="form-control" />
+                <span asp-validation-for="RankInAgeGroup" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsRewarded" /> @Html.DisplayNameFor(model => model.IsRewarded)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="RewardedAt" class="control-label"></label>
+                <input asp-for="RewardedAt" class="form-control" />
+                <span asp-validation-for="RewardedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedAt" class="control-label"></label>
+                <input asp-for="CreatedAt" class="form-control" />
+                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+</body>
+</html>
