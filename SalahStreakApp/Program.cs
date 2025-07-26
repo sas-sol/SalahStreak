@@ -16,6 +16,25 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+// 🌱 SEED THE DATABASE BEFORE RUNNING THE APP
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        Console.WriteLine("🌱 Starting database seeding...");
+        DbSeeder.Seed(context);
+        Console.WriteLine("✅ Database seeding completed!");
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+        Console.WriteLine($"❌ Error seeding database: {ex.Message}");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -44,18 +63,3 @@ app.MapRazorPages()
    .WithStaticAssets();
 
 app.Run();
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        DbSeeder.Seed(context);
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the database.");
-    }
-}

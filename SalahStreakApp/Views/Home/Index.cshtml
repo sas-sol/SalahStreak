@@ -1,8 +1,27 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
+    var models = new[] {
+        "Participant", "AgeGroup", "BiometricLog", "AttendanceCalendar",
+        "AttendanceScore", "Round", "Winner", "Reward"
+    };
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row">
+    <div class="col-12">
+        <h1 class="h2 mb-4 text-center">SalahStreak Admin Dashboard</h1>
+    </div>
+</div>
+
+<div class="row g-4">
+    @foreach (var aModel in models)
+    {
+        <div class="col-md-4 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">@aModel</h5>
+                    <a href="@Url.Action("Index", aModel)" class="btn btn-primary">View</a>
+                </div>
+            </div>
+        </div>
+    }
 </div>
