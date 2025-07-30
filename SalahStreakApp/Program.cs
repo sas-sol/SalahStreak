@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SalahStreakApp.Data;
+using SalahStreakApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,23 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+// Add BioTime API services
+builder.Services.AddHttpClient<BioTimeApiService>();
+builder.Services.AddScoped<BioTimeApiService>();
+builder.Services.AddHostedService<BiometricPollingService>();
+
+// Add Attendance Scoring services
+builder.Services.AddScoped<AttendanceScoringService>();
+builder.Services.AddHostedService<ScoreProcessingService>();
+
+// Add Round Management services
+builder.Services.AddScoped<RoundManagementService>();
+builder.Services.AddHostedService<RoundAutoManagementService>();
+
+// Configure BioTime settings
+builder.Services.Configure<BioTimeConfig>(
+    builder.Configuration.GetSection("BioTimeApi"));
 
 var app = builder.Build();
 
