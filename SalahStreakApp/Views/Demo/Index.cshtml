@@ -1,0 +1,167 @@
+@model SalahStreakApp.Models.DemoDashboardViewModel
+@{
+    ViewData["Title"] = "Demo Dashboard";
+}
+
+<div class="container-fluid">
+    <!-- Alerts -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h2 text-center">📝 SalahStreak Demo Dashboard</h1>
+            <p class="text-center text-muted">Test and demonstrate the system functionality</p>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">@Model.TotalParticipants</h3>
+                    <p class="card-text">Participants</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">@Model.TotalBiometricLogs</h3>
+                    <p class="card-text">Biometric Logs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">@Model.TotalAttendanceScores</h3>
+                    <p class="card-text">Attendance Scores</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">@Model.ActiveRounds.Count</h3>
+                    <p class="card-text">Active Rounds</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Demo Actions -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">🧪 Test Data Generation</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Generate mock biometric data and process attendance scores.</p>
+                    <form asp-action="GenerateTestData" method="post">
+                        <button type="submit" class="btn btn-primary">Generate Test Data</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">⚙️ Round Management</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Create test rounds and process winners.</p>
+                    <div class="d-flex gap-2">
+                        <form asp-action="CreateTestRound" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-success">Create Test Round</button>
+                        </form>
+                        @if (Model.CurrentRound != null)
+                        {
+                            <form asp-action="ProcessRoundWinners" method="post" class="d-inline">
+                                <input type="hidden" name="roundId" value="@Model.CurrentRound.Id" />
+                                <button type="submit" class="btn btn-warning">Process Winners</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">🔍 Diagnostic</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Check current data and scoring status.</p>
+                    <a href="@Url.Action("Diagnostic")" class="btn btn-info">Run Diagnostic</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">🔄 Force Score Processing</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Clear existing scores and reprocess all attendance data.</p>
+                    <form asp-action="ForceScoreProcessing" method="post">
+                        <button type="submit" class="btn btn-warning">Force Reprocess Scores</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">🐛 Debug Scoring</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Debug the scoring logic step by step.</p>
+                    <a href="@Url.Action("DebugScoring")" class="btn btn-info">Debug Scoring</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">📅 Generate Calendar Data</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Create comprehensive calendar entries for the past 60 days.</p>
+                    <form asp-action="GenerateCalendarData" method="post">
+                        <button type="submit" class="btn btn-success">Generate Calendar Data</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">️ Reset All Data</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Clear all data except participants and age groups.</p>
+                    <form asp-action="ResetAllData" method="post">
+                        <button type="submit" class="btn btn-danger">Reset All Data</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  

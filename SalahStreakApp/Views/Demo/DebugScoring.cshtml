@@ -1,0 +1,92 @@
+@model SalahStreakApp.Models.DebugScoringViewModel
+@{
+    ViewData["Title"] = "Debug Scoring";
+}
+
+<div class="container-fluid">
+    <h1>🐛 Debug Scoring</h1>
+
+    @if (Model.Participant != null && Model.Calendar != null)
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Participant: @Model.Participant.FullName</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>ID:</strong> @Model.Participant.Id</p>
+                        <p><strong>Participant ID:</strong> @Model.Participant.ParticipantId</p>
+                        <p><strong>Age Group:</strong> @Model.Participant.AgeGroup?.Name</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Calendar Entry: @Model.Calendar.Date.ToString("yyyy-MM-dd")</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Expected Time:</strong> @Model.ExpectedTime?.ToString("HH:mm")</p>
+                        <p><strong>Window:</strong> @Model.WindowStart?.ToString("HH:mm") - @Model.WindowEnd?.ToString("HH:mm")</p>
+                        <p><strong>Window Minutes:</strong> @Model.Calendar.TimeWindowMinutes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>All Biometric Logs (@Model.BiometricLogs.Count)</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.BiometricLogs.Any())
+                        {
+                            <ul>
+                                @foreach (var log in Model.BiometricLogs)
+                                {
+                                    <li>@log.CheckInTime.ToString("yyyy-MM-dd HH:mm") - Device: @log.DeviceId</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No biometric logs found for this participant.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Valid Logs (@Model.ValidLogs.Count)</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.ValidLogs.Any())
+                        {
+                            <ul>
+                                @foreach (var log in Model.ValidLogs)
+                                {
+                                    <li>@log.CheckInTime.ToString("yyyy-MM-dd HH:mm") - Device: @log.DeviceId</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No valid logs found within the time window.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <h4>No Data Available</h4>
+            <p>No participant or calendar data found for debugging.</p>
+        </div>
+    }
+</div>

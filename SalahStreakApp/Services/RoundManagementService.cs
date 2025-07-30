@@ -103,13 +103,17 @@ public class RoundManagementService
     {
         var winners = new List<Winner>();
 
-        // Get participants in this age group with scores >= 195
-        var eligibleParticipants = await _dbContext.Participants
+        // Get participants in this age group
+        var participants = await _dbContext.Participants
             .Where(p => p.AgeGroupId == ageGroup.Id)
+            .ToListAsync();
+
+        // Filter eligible participants (score >= 195) in memory
+        var eligibleParticipants = participants
             .Where(p => participantScores.ContainsKey(p.Id) && participantScores[p.Id] >= 195)
             .OrderByDescending(p => participantScores[p.Id])
             .ThenBy(p => p.ParticipantId) // Tie-breaker
-            .ToListAsync();
+            .ToList();
 
         if (!eligibleParticipants.Any())
         {

@@ -109,11 +109,11 @@ namespace SalahStreakApp.Data
                     // 5 prayer times per day - convert to TimeSpan
                     var prayerTimes = new[] 
                     { 
-                        TimeSpan.FromHours(5).Add(TimeSpan.FromMinutes(15)), // 05:15
-                        TimeSpan.FromHours(12).Add(TimeSpan.FromMinutes(30)), // 12:30
-                        TimeSpan.FromHours(16), // 16:00
-                        TimeSpan.FromHours(18).Add(TimeSpan.FromMinutes(30)), // 18:30
-                        TimeSpan.FromHours(20) // 20:00
+                        new TimeSpan(5, 15, 0), // 05:15
+                        new TimeSpan(12, 30, 0), // 12:30
+                        new TimeSpan(16, 0, 0), // 16:00
+                        new TimeSpan(18, 30, 0), // 18:30
+                        new TimeSpan(20, 0, 0) // 20:00
                     };
                     
                     foreach (var time in prayerTimes)
@@ -122,7 +122,7 @@ namespace SalahStreakApp.Data
                         {
                             Date = date,
                             ExpectedTime = time,
-                            TimeWindowMinutes = 30, // ±30 minutes
+                            TimeWindowMinutes = 30, // ±30 minutes default
                             IsActive = true,
                             Description = $"Prayer time on {date:MMM dd, yyyy}"
                         });
@@ -137,22 +137,58 @@ namespace SalahStreakApp.Data
             var biometricLogs = new BiometricLog[]
             {
                 new BiometricLog { 
+                    ParticipantId = "P001",
                     ParticipantId_int = participants[0].Id, 
                     CheckInTime = DateTime.Now.AddDays(-1).AddHours(5).AddMinutes(15), // Fajr
                     DeviceId = "DEV001",
-                    RawData = "Sample biometric data"
+                    RawData = "Sample biometric data",
+                    IsProcessed = false,
+                    CreatedAt = DateTime.Now
                 },
                 new BiometricLog { 
+                    ParticipantId = "P001",
                     ParticipantId_int = participants[0].Id, 
                     CheckInTime = DateTime.Now.AddDays(-1).AddHours(12).AddMinutes(30), // Dhuhr
                     DeviceId = "DEV001",
-                    RawData = "Sample biometric data"
+                    RawData = "Sample biometric data",
+                    IsProcessed = false,
+                    CreatedAt = DateTime.Now
                 },
                 new BiometricLog { 
+                    ParticipantId = "P002",
                     ParticipantId_int = participants[1].Id, 
                     CheckInTime = DateTime.Now.AddDays(-2).AddHours(5).AddMinutes(20), // Fajr
                     DeviceId = "DEV002",
-                    RawData = "Sample biometric data"
+                    RawData = "Sample biometric data",
+                    IsProcessed = false,
+                    CreatedAt = DateTime.Now
+                },
+                new BiometricLog { 
+                    ParticipantId = "P003",
+                    ParticipantId_int = participants[2].Id, 
+                    CheckInTime = DateTime.Now.AddDays(-3).AddHours(16).AddMinutes(5), // Asr
+                    DeviceId = "DEV003",
+                    RawData = "Sample biometric data",
+                    IsProcessed = false,
+                    CreatedAt = DateTime.Now
+                },
+                new BiometricLog { 
+                    ParticipantId = "P004",
+                    ParticipantId_int = participants[3].Id, 
+                    CheckInTime = DateTime.Now.AddDays(-4).AddHours(18).AddMinutes(45), // Maghrib
+                    DeviceId = "DEV001",
+                    RawData = "Sample biometric data",
+                    IsProcessed = false,
+                    CreatedAt = DateTime.Now
+                },
+                new BiometricLog { 
+                    ParticipantId = "P005",
+                    ParticipantId_int = participants[4].Id, 
+                    CheckInTime = DateTime.Now.AddDays(-5).AddHours(20).AddMinutes(10), // Isha
+                    DeviceId = "DEV002",
+                    RawData = "Sample biometric data",
+                    IsProcessed = false,
+                    CreatedAt = DateTime.Now
                 }
             };
 

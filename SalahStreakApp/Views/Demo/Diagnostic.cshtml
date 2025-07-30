@@ -1,0 +1,123 @@
+@model SalahStreakApp.Models.DiagnosticViewModel
+@{
+    ViewData["Title"] = "Diagnostic";
+}
+
+<div class="container-fluid">
+    <h1>🔍 Diagnostic Dashboard</h1>
+
+    @if (Model.CurrentRound == null)
+    {
+        <div class="alert alert-warning">
+            <h4>No Active Round Found</h4>
+            <p>There is no current active round. Please create a round first.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Current Round: @Model.CurrentRound.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Start Date:</strong> @Model.CurrentRound.StartDate.ToString("yyyy-MM-dd")</p>
+                        <p><strong>End Date:</strong> @Model.CurrentRound.EndDate.ToString("yyyy-MM-dd")</p>
+                        <p><strong>Duration:</strong> @Model.CurrentRound.DurationDays days</p>
+                        <p><strong>Status:</strong> @(Model.CurrentRound.IsCompleted ? "Completed" : "Active")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Participant Scores</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Participant</th>
+                                    <th>Age Group</th>
+                                    <th>Score</th>
+                                    <th>Total Possible</th>
+                                    <th>Percentage</th>
+                                    <th>Eligible (≥195)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var score in Model.ParticipantScores)
+                                {
+                                    <tr class="@(score.IsEligible ? "table-success" : "")">
+                                        <td>@score.Participant.FullName</td>
+                                        <td>@score.Participant.AgeGroup?.Name</td>
+                                        <td>@score.Score</td>
+                                        <td>@score.TotalPossible</td>
+                                        <td>@score.Percentage.ToString("F1")%</td>
+                                        <td>
+                                            @if (score.IsEligible)
+                                            {
+                                                <span class="badge bg-success">Yes</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">No</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Biometric Logs (@Model.BiometricLogs.Count)</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Total biometric logs in round period: @Model.BiometricLogs.Count</p>
+                        @if (Model.BiometricLogs.Any())
+                        {
+                            <p>Sample logs:</p>
+                            <ul>
+                                @foreach (var log in Model.BiometricLogs.Take(5))
+                                {
+                                    <li>@log.Participant?.FullName - @log.CheckInTime.ToString("yyyy-MM-dd HH:mm")</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Attendance Scores (@Model.AttendanceScores.Count)</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Total attendance scores in round period: @Model.AttendanceScores.Count</p>
+                        @if (Model.AttendanceScores.Any())
+                        {
+                            <p>Sample scores:</p>
+                            <ul>
+                                @foreach (var score in Model.AttendanceScores.Take(5))
+                                {
+                                    <li>@score.Participant?.FullName - @score.Score points on @score.AttendanceCalendar?.Date.ToString("yyyy-MM-dd")</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
