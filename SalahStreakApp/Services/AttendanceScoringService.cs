@@ -192,14 +192,15 @@ public class AttendanceScoringService
         var query = _dbContext.AttendanceScores
             .Include(score => score.AttendanceCalendar)
             .Include(score => score.BiometricLog)
-            .Where(score => score.ParticipantId == participantId)
-            .OrderBy(score => score.AttendanceCalendar.Date);
+            .Where(score => score.ParticipantId == participantId);
 
         if (fromDate.HasValue)
             query = query.Where(score => score.AttendanceCalendar.Date >= fromDate.Value);
         if (toDate.HasValue)
             query = query.Where(score => score.AttendanceCalendar.Date <= toDate.Value);
 
-        return await query.ToListAsync();
+        return await query
+            .OrderBy(score => score.AttendanceCalendar.Date)
+            .ToListAsync();
     }
 } 

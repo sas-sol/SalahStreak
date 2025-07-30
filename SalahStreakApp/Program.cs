@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SalahStreakApp.Data;
 using SalahStreakApp.Services;
+using SalahStreakApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
