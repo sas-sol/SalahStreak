@@ -49,7 +49,14 @@
                 @Html.DisplayFor(modelItem => item.ParticipantId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Participant.Email)
+                @if (item.Participant != null && item.Participant.FullName != null)
+                {
+                    @item.Participant.FullName
+                }
+                else
+                {
+                    <span>Unknown Participant</span>
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CheckInTime)
