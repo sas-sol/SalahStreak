@@ -4,8 +4,6 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalahStreakApp", "SalahStreakApp\SalahStreakApp.csproj", "{08E8EF2E-1BC6-1901-882B-D20B6836CD0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchScaffoldTool", "BatchScaffoldTool\BatchScaffoldTool.csproj", "{27021EAD-9CCB-4455-8E96-644CD11D3BE4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
