@@ -341,6 +341,43 @@ public class DemoController : Controller
         return View(viewModel);
     }
 
+    public async Task<IActionResult> TestJwtToken()
+    {
+        try
+        {
+            var token = await _bioTimeService.GetJwtTokenAsync();
+            if (token != null)
+            {
+                _logger.LogInformation("Successfully retrieved JWT token: {Token}", token.Substring(0, Math.Min(20, token.Length)) + "...");
+                return Content($"JWT Token retrieved successfully! Token starts with: {token.Substring(0, Math.Min(20, token.Length))}...", "text/plain");
+            }
+            else
+            {
+                _logger.LogWarning("Failed to retrieve JWT token");
+                return Content("Failed to retrieve JWT token. Check logs for details.", "text/plain");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error testing JWT token retrieval");
+            return Content($"Error: {ex.Message}", "text/plain");
+        }
+    }
+
+    public async Task<IActionResult> ImportBioTimeTransactions(string? empCode = null, DateTime? startTime = null, DateTime? endTime = null)
+    {
+        try
+        {
+            var imported = await _bioTimeService.ImportTransactionsAsync(startTime, endTime, empCode);
+            return Content($"Imported {imported} BioTime transactions.", "text/plain");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error importing BioTime transactions");
+            return Content($"Error: {ex.Message}", "text/plain");
+        }
+    }
+
     private async Task GenerateSimpleCalendarDataAsync()
     {
         try

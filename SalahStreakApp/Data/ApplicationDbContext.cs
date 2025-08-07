@@ -20,6 +20,7 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Round> Rounds { get; set; }
     public DbSet<Winner> Winners { get; set; }
     public DbSet<Reward> Rewards { get; set; }
+    public DbSet<BioTimeTransaction> BioTimeTransactions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -95,6 +96,11 @@ public class ApplicationDbContext : IdentityDbContext
 
         builder.Entity<Winner>()
             .HasIndex(w => new { w.RoundId, w.ParticipantId })
+            .IsUnique();
+
+        // BioTime raw transactions unique on remote id
+        builder.Entity<BioTimeTransaction>()
+            .HasIndex(t => t.RemoteId)
             .IsUnique();
     }
 }
