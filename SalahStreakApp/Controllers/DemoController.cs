@@ -193,6 +193,24 @@ public class DemoController : Controller
         }
     }
 
+    [HttpPost]
+    public async Task<IActionResult> GenerateMassiveDemoData(int participantsPerAgeGroup = 20)
+    {
+        try
+        {
+            await GenerateMassiveDemoDataAsync(participantsPerAgeGroup);
+
+            TempData["Success"] = $"Massive demo data generated successfully (participants/group: {participantsPerAgeGroup}).";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating massive demo data");
+            TempData["Error"] = "Error generating massive demo data: " + ex.Message;
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
     public async Task<IActionResult> DebugScoring()
     {
         var debug = new DebugScoringViewModel();
@@ -628,7 +646,7 @@ public class DemoController : Controller
                 {
                     Date = date,
                     ExpectedTime = prayer.Time,
-                    TimeWindowMinutes = 20, // 20-minute window as requested
+                    TimeWindowMinutes = 30, // 30-minute window per demo requirement
                     IsActive = true,
                     Description = $"{prayer.Name} on {date:yyyy-MM-dd}"
                 };
@@ -683,9 +701,13 @@ public class DemoController : Controller
             // Get calendar entries for the last 40 days
             var calendars = await _dbContext.AttendanceCalendars
                 .Where(ac => ac.IsActive && ac.Date >= DateTime.Today.AddDays(-39))
-                .OrderBy(ac => ac.Date)
-                .ThenBy(ac => ac.ExpectedTime)
+                .OrderBy(ac => ac.Date) // SQL-side
                 .ToListAsync();
+
+            calendars = calendars
+                .OrderBy(ac => ac.Date)
+                .ThenBy(ac => ac.ExpectedTime) // client-side (TimeSpan)
+                .ToList();
 
             _logger.LogInformation("Found {CalendarCount} calendar entries for age group {AgeGroupName}", 
                 calendars.Count, ageGroup.Name);
@@ -758,5 +780,126 @@ public class DemoController : Controller
             logs.Count, participant.FullName, targetScore);
 
         return logs;
+    }
+
+    private async Task GenerateMassiveDemoDataAsync(int participantsPerAgeGroup)
+    {
+        // End-to-end: wipe data, ensure age groups, add participants, generate 40-day calendar,
+        // generate targeted + random logs, process scores, create round, process winners.
+        await ClearExistingDataAsync();
+
+        // Ensure age groups exist
+        var ageGroups = await _dbContext.AgeGroups.OrderBy(a => a.Id).ToListAsync();
+        if (!ageGroups.Any())
+        {
+            ageGroups = new List<AgeGroup>
+            {
+                new AgeGroup { Name = "Children (5-12)", MinAge = 5, MaxAge = 12, Description = "Young children" },
+                new AgeGroup { Name = "Teens (13-17)", MinAge = 13, MaxAge = 17, Description = "Teenagers" },
+                new AgeGroup { Name = "Young Adults (18-25)", MinAge = 18, MaxAge = 25, Description = "Young adults" },
+                new AgeGroup { Name = "Adults (26-40)", MinAge = 26, MaxAge = 40, Description = "Adults" },
+                new AgeGroup { Name = "Seniors (40+)", MinAge = 40, MaxAge = 100, Description = "Senior participants" }
+            };
+            await _dbContext.AgeGroups.AddRangeAsync(ageGroups);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        // Start fresh participants to avoid unique ParticipantId conflicts from prior runs
+        var existingParticipants = await _dbContext.Participants.ToListAsync();
+        if (existingParticipants.Any())
+        {
+            _dbContext.Participants.RemoveRange(existingParticipants);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        // Bulk-generate participants
+        var newParticipants = new List<Participant>();
+        var now = DateTime.Now;
+        int globalIndex = 1;
+        foreach (var group in ageGroups)
+        {
+            for (int i = 1; i <= participantsPerAgeGroup; i++)
+            {
+                var age = Math.Min(group.MaxAge, Math.Max(group.MinAge, group.MinAge + (i % Math.Max(1, group.MaxAge - group.MinAge))));
+                var participantId = $"G{group.Id:D2}-P{globalIndex:D6}-{DateTime.UtcNow.Ticks % 1000:D3}"; // practically unique across runs
+                newParticipants.Add(new Participant
+                {
+                    FullName = $"Demo User {globalIndex:D4}",
+                    Age = age,
+                    Gender = (i % 2 == 0) ? "Male" : "Female",
+                    Phone = $"+92-3{(i % 9) + 0}{(1000000 + (globalIndex % 8999999)):D7}",
+                    Email = $"demo{globalIndex:D4}@example.com",
+                    ParticipantId = participantId,
+                    ParentName = $"Parent {globalIndex:D4}",
+                    ParentCNIC = $"35202-{(1000000 + (globalIndex % 8999999)):D7}-{(i % 9)}",
+                    AgeGroupId = group.Id,
+                    IsActive = true,
+                    CreatedAt = now.AddDays(-10)
+                });
+                globalIndex++;
+            }
+        }
+        await _dbContext.Participants.AddRangeAsync(newParticipants);
+        await _dbContext.SaveChangesAsync();
+
+        // 40-day calendar
+        await GenerateFortyDayCalendarAsync(); // creates ±30 min windows now
+
+        // Fetch for log generation
+        var participants = await _dbContext.Participants.Include(p => p.AgeGroup).ToListAsync();
+        var calendars = await _dbContext.AttendanceCalendars
+            .Where(ac => ac.IsActive && ac.Date >= DateTime.Today.AddDays(-39))
+            .OrderBy(ac => ac.Date) // SQL-side
+            .ToListAsync();
+
+        calendars = calendars
+            .OrderBy(ac => ac.Date)
+            .ThenBy(ac => ac.ExpectedTime) // client-side (TimeSpan)
+            .ToList();
+
+        var random = new Random(7);
+        var logsToInsert = new List<BiometricLog>();
+
+        // Group by age group
+        var byGroup = participants.GroupBy(p => p.AgeGroupId).ToDictionary(g => g.Key, g => g.ToList());
+
+        foreach (var group in ageGroups)
+        {
+            if (!byGroup.TryGetValue(group.Id, out var groupParticipants) || groupParticipants.Count < 2)
+            {
+                continue;
+            }
+
+            // Guaranteed winner and near-miss for this group
+            var participantWinner = groupParticipants[0];
+            var participantNearMiss = groupParticipants[1];
+
+            logsToInsert.AddRange(GenerateParticipantLogs(participantWinner, calendars, 197, random));
+            logsToInsert.AddRange(GenerateParticipantLogs(participantNearMiss, calendars, 193, random));
+
+            // The rest: random realistic attendance to create volume
+            for (int i = 2; i < groupParticipants.Count; i++)
+            {
+                var p = groupParticipants[i];
+                // between 50% and 85% attendance
+                var target = (int)Math.Round(calendars.Count * (0.50 + (random.NextDouble() * 0.35)));
+                logsToInsert.AddRange(GenerateParticipantLogs(p, calendars, target, random));
+            }
+        }
+
+        // Insert biometric logs in bulk
+        await _dbContext.BiometricLogs.AddRangeAsync(logsToInsert);
+        await _dbContext.SaveChangesAsync();
+
+        // Process scores
+        await _scoringService.ProcessAttendanceScoresAsync();
+
+        // Create a round matching the 40-day calendar and process winners
+        var roundStart = DateTime.Today.AddDays(-39);
+        var round = await _roundService.CreateRoundAsync($"Demo Round {DateTime.Today:yyyy-MM-dd}", roundStart, 40);
+        await _roundService.ProcessRoundWinnersAsync(round.Id);
+
+        _logger.LogInformation("Massive demo generation complete: {ParticipantCount} participants, {CalendarCount} calendars, {LogCount} logs", 
+            newParticipants.Count, calendars.Count, logsToInsert.Count);
     }
 }

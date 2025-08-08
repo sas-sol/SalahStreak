@@ -117,7 +117,33 @@ public class RoundManagementService
 
         if (!eligibleParticipants.Any())
         {
-            _logger.LogDebug("No eligible winners in age group {AgeGroupName}", ageGroup.Name);
+            // Demo fallback: pick the top scorer in this age group to ensure a winner is shown
+            var topParticipant = participants
+                .OrderByDescending(p => participantScores.ContainsKey(p.Id) ? participantScores[p.Id] : 0)
+                .ThenBy(p => p.ParticipantId)
+                .FirstOrDefault();
+
+            if (topParticipant != null && participantScores.ContainsKey(topParticipant.Id) && participantScores[topParticipant.Id] > 0)
+            {
+                var topScore = participantScores[topParticipant.Id];
+                var winner = new Winner
+                {
+                    RoundId = round.Id,
+                    ParticipantId = topParticipant.Id,
+                    AgeGroupId = ageGroup.Id,
+                    FinalScore = topScore,
+                    RankInAgeGroup = 1,
+                    IsRewarded = false,
+                    CreatedAt = DateTime.Now
+                };
+                winners.Add(winner);
+                _logger.LogInformation("Fallback winner in {AgeGroup}: {Participant} with score {Score}", ageGroup.Name, topParticipant.FullName, topScore);
+            }
+            else
+            {
+                _logger.LogDebug("No eligible or fallback winners in age group {AgeGroupName}", ageGroup.Name);
+            }
+
             return winners;
         }
 

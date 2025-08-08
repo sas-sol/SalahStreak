@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Demo Dashboard";
 }
-
+   
 <div class="container-fluid">
     <!-- Alerts -->
     @if (TempData["Success"] != null)
@@ -88,6 +88,13 @@
                     <p class="card-text">Generate 40 days of calendar + targeted biometric logs for winners/near-misses per age group.</p>
                     <form asp-action="GenerateComprehensiveDemoData" method="post">
                         <button type="submit" class="btn btn-success">Generate Comprehensive Demo</button>
+                    </form>
+                    <hr />
+                    <p class="card-text">Generate thousands of records with guaranteed winners per age group.</p>
+                    <form asp-action="GenerateMassiveDemoData" method="post" class="d-flex gap-2 align-items-center">
+                        <label for="ppg" class="form-label mb-0">Participants / Age Group:</label>
+                        <input type="number" id="ppg" name="participantsPerAgeGroup" class="form-control" value="20" min="2" max="200" style="width:120px" />
+                        <button type="submit" class="btn btn-outline-success">Generate Massive Demo</button>
                     </form>
                 </div>
             </div>
@@ -178,3 +185,30 @@
     </div>
 
   
+ <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">🛰️ Fetch Biometric Transactions</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Fetch transactions from BioTime API to display in the demo.</p>
+                    <form asp-action="ImportBioTimeTransactions" method="get" class="d-flex gap-2 align-items-end">
+                        <div>
+                            <label for="empCode" class="form-label">Employee Code (optional)</label>
+                            <input id="empCode" name="empCode" class="form-control" />
+                        </div>
+                        <div>
+                            <label for="startTime" class="form-label">Start (optional)</label>
+                            <input id="startTime" name="startTime" type="datetime-local" class="form-control" />
+                        </div>
+                        <div>
+                            <label for="endTime" class="form-label">End (optional)</label>
+                            <input id="endTime" name="endTime" type="datetime-local" class="form-control" />
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary">Fetch</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>

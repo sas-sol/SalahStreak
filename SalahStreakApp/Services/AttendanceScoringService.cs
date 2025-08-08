@@ -38,6 +38,9 @@ public class AttendanceScoringService
             }
 
             _logger.LogInformation("Completed attendance score processing");
+
+            // Persist all score changes
+            await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -88,8 +91,12 @@ public class AttendanceScoringService
         var checkIns = await _dbContext.BiometricLogs
             .Where(log => log.ParticipantId_int == participant.Id || log.ParticipantId == participant.ParticipantId)
             .Where(log => log.CheckInTime >= windowStart && log.CheckInTime <= windowEnd)
-            .OrderBy(log => Math.Abs((log.CheckInTime - expectedDateTime).TotalMinutes))
             .ToListAsync();
+
+        // Order in-memory by closeness to expected time to avoid non-translatable SQL
+        checkIns = checkIns
+            .OrderBy(log => Math.Abs((log.CheckInTime - expectedDateTime).TotalMinutes))
+            .ToList();
 
         // Get late check-ins (outside window but same day)
         var lateCheckIns = await _dbContext.BiometricLogs
