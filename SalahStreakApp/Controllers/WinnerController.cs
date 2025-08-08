@@ -10,20 +10,99 @@ using SalahStreakApp.Models;
 
 namespace SalahStreakApp.Controllers
 {
-    public class WinnerController : Controller
+    public class WinnerController : BaseController
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _dbContext;
 
-        public WinnerController(ApplicationDbContext context)
+        public WinnerController(ApplicationDbContext context, ILogger<WinnerController> logger)
+            : base(context, logger)
         {
-            _context = context;
+            _dbContext = context;
         }
 
         // GET: Winner
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Winners.Include(w => w.AgeGroup).Include(w => w.Participant).Include(w => w.Round);
-            return View(await applicationDbContext.ToListAsync());
+            var winners = await _dbContext.Winners
+                .Include(w => w.AgeGroup)
+                .Include(w => w.Participant)
+                .Include(w => w.Round)
+                .ToListAsync();
+
+            var columns = new object[]
+            {
+                new { title = "ID", field = "id" },
+                new { title = "Round", field = "round" },
+                new { title = "Participant", field = "participant" },
+                new { title = "Age Group", field = "ageGroup" },
+                new { title = "Score", field = "score" },
+                new { title = "Rank", field = "rank" },
+                new { title = "Rewarded", field = "rewarded" },
+                new { title = "Created", field = "createdAt" },
+                new { title = "Actions", field = "actions" }
+            };
+
+            var data = winners.Select(w => new
+            {
+                id = w.Id,
+                round = w.Round?.Name ?? w.RoundId.ToString(),
+                participant = w.Participant?.FullName ?? w.ParticipantId.ToString(),
+                ageGroup = w.AgeGroup?.Name ?? w.AgeGroupId.ToString(),
+                score = w.FinalScore,
+                rank = w.RankInAgeGroup,
+                rewarded = w.IsRewarded ? "Yes" : "No",
+                createdAt = w.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
+                actions = $"<div class='btn-group'><button class='btn btn-sm btn-outline-primary dropdown-toggle' data-bs-toggle='dropdown'>Actions</button><ul class='dropdown-menu'><li><a class='dropdown-item' href='/Winner/Edit/{w.Id}'>Edit</a></li><li><a class='dropdown-item' href='/Winner/Details/{w.Id}'>Details</a></li><li><a class='dropdown-item' href='/Winner/Delete/{w.Id}'>Delete</a></li></ul></div>"
+            }).ToList();
+
+            ViewData["TableId"] = "winnersTable";
+            ViewData["Columns"] = columns;
+            ViewData["TableData"] = data;
+            ViewData["TableTitle"] = "Winners";
+            ViewData["ShowExport"] = true;
+            ViewData["ShowSearch"] = true;
+            ViewData["ShowRefresh"] = true;
+            ViewData["RefreshUrl"] = Url.Action("GetData", "Winner");
+
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetData(int page = 1, int size = 25, string sortField = "Id", string sortOrder = "desc", string searchTerm = "")
+        {
+            IQueryable<Winner> query = _dbContext.Winners
+                .Include(w => w.AgeGroup)
+                .Include(w => w.Participant)
+                .Include(w => w.Round);
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(w => w.Participant.FullName.Contains(searchTerm) || w.Round.Name.Contains(searchTerm));
+            }
+
+            IQueryable<Winner> sortedQuery = sortField.ToLower() switch
+            {
+                "round" => sortOrder == "asc" ? query.OrderBy(w => w.Round.Name) : query.OrderByDescending(w => w.Round.Name),
+                "participant" => sortOrder == "asc" ? query.OrderBy(w => w.Participant.FullName) : query.OrderByDescending(w => w.Participant.FullName),
+                "agegroup" => sortOrder == "asc" ? query.OrderBy(w => w.AgeGroup.Name) : query.OrderByDescending(w => w.AgeGroup.Name),
+                "score" => sortOrder == "asc" ? query.OrderBy(w => w.FinalScore) : query.OrderByDescending(w => w.FinalScore),
+                "rank" => sortOrder == "asc" ? query.OrderBy(w => w.RankInAgeGroup) : query.OrderByDescending(w => w.RankInAgeGroup),
+                "createdat" => sortOrder == "asc" ? query.OrderBy(w => w.CreatedAt) : query.OrderByDescending(w => w.CreatedAt),
+                _ => sortOrder == "asc" ? query.OrderBy(w => w.Id) : query.OrderByDescending(w => w.Id)
+            };
+
+            return await GetTableDataAsync(sortedQuery, w => new
+            {
+                id = w.Id,
+                round = w.Round.Name,
+                participant = w.Participant.FullName,
+                ageGroup = w.AgeGroup.Name,
+                score = w.FinalScore,
+                rank = w.RankInAgeGroup,
+                rewarded = w.IsRewarded ? "Yes" : "No",
+                createdAt = w.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
+                actions = $"<div class='btn-group'><button class='btn btn-sm btn-outline-primary dropdown-toggle' data-bs-toggle='dropdown'>Actions</button><ul class='dropdown-menu'><li><a class='dropdown-item' href='/Winner/Edit/{w.Id}'>Edit</a></li><li><a class='dropdown-item' href='/Winner/Details/{w.Id}'>Details</a></li><li><a class='dropdown-item' href='/Winner/Delete/{w.Id}'>Delete</a></li></ul></div>"
+            }, page, size, sortField, sortOrder, searchTerm);
         }
 
         // GET: Winner/Details/5
@@ -34,7 +113,7 @@ namespace SalahStreakApp.Controllers
                 return NotFound();
             }
 
-            var winner = await _context.Winners
+            var winner = await _dbContext.Winners
                 .Include(w => w.AgeGroup)
                 .Include(w => w.Participant)
                 .Include(w => w.Round)
@@ -50,9 +129,9 @@ namespace SalahStreakApp.Controllers
         // GET: Winner/Create
         public IActionResult Create()
         {
-            ViewData["AgeGroupId"] = new SelectList(_context.AgeGroups, "Id", "Name");
-            ViewData["ParticipantId"] = new SelectList(_context.Participants, "Id", "Email");
-            ViewData["RoundId"] = new SelectList(_context.Rounds, "Id", "Name");
+            ViewData["AgeGroupId"] = new SelectList(_dbContext.AgeGroups, "Id", "Name");
+            ViewData["ParticipantId"] = new SelectList(_dbContext.Participants, "Id", "Email");
+            ViewData["RoundId"] = new SelectList(_dbContext.Rounds, "Id", "Name");
             return View();
         }
 
@@ -65,13 +144,13 @@ namespace SalahStreakApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(winner);
-                await _context.SaveChangesAsync();
+                _dbContext.Add(winner);
+                await _dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AgeGroupId"] = new SelectList(_context.AgeGroups, "Id", "Name", winner.AgeGroupId);
-            ViewData["ParticipantId"] = new SelectList(_context.Participants, "Id", "Email", winner.ParticipantId);
-            ViewData["RoundId"] = new SelectList(_context.Rounds, "Id", "Name", winner.RoundId);
+            ViewData["AgeGroupId"] = new SelectList(_dbContext.AgeGroups, "Id", "Name", winner.AgeGroupId);
+            ViewData["ParticipantId"] = new SelectList(_dbContext.Participants, "Id", "Email", winner.ParticipantId);
+            ViewData["RoundId"] = new SelectList(_dbContext.Rounds, "Id", "Name", winner.RoundId);
             return View(winner);
         }
 
@@ -83,14 +162,14 @@ namespace SalahStreakApp.Controllers
                 return NotFound();
             }
 
-            var winner = await _context.Winners.FindAsync(id);
+            var winner = await _dbContext.Winners.FindAsync(id);
             if (winner == null)
             {
                 return NotFound();
             }
-            ViewData["AgeGroupId"] = new SelectList(_context.AgeGroups, "Id", "Name", winner.AgeGroupId);
-            ViewData["ParticipantId"] = new SelectList(_context.Participants, "Id", "Email", winner.ParticipantId);
-            ViewData["RoundId"] = new SelectList(_context.Rounds, "Id", "Name", winner.RoundId);
+            ViewData["AgeGroupId"] = new SelectList(_dbContext.AgeGroups, "Id", "Name", winner.AgeGroupId);
+            ViewData["ParticipantId"] = new SelectList(_dbContext.Participants, "Id", "Email", winner.ParticipantId);
+            ViewData["RoundId"] = new SelectList(_dbContext.Rounds, "Id", "Name", winner.RoundId);
             return View(winner);
         }
 
@@ -110,8 +189,8 @@ namespace SalahStreakApp.Controllers
             {
                 try
                 {
-                    _context.Update(winner);
-                    await _context.SaveChangesAsync();
+                    _dbContext.Update(winner);
+                    await _dbContext.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -126,9 +205,9 @@ namespace SalahStreakApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AgeGroupId"] = new SelectList(_context.AgeGroups, "Id", "Name", winner.AgeGroupId);
-            ViewData["ParticipantId"] = new SelectList(_context.Participants, "Id", "Email", winner.ParticipantId);
-            ViewData["RoundId"] = new SelectList(_context.Rounds, "Id", "Name", winner.RoundId);
+            ViewData["AgeGroupId"] = new SelectList(_dbContext.AgeGroups, "Id", "Name", winner.AgeGroupId);
+            ViewData["ParticipantId"] = new SelectList(_dbContext.Participants, "Id", "Email", winner.ParticipantId);
+            ViewData["RoundId"] = new SelectList(_dbContext.Rounds, "Id", "Name", winner.RoundId);
             return View(winner);
         }
 
@@ -140,7 +219,7 @@ namespace SalahStreakApp.Controllers
                 return NotFound();
             }
 
-            var winner = await _context.Winners
+            var winner = await _dbContext.Winners
                 .Include(w => w.AgeGroup)
                 .Include(w => w.Participant)
                 .Include(w => w.Round)
@@ -158,19 +237,19 @@ namespace SalahStreakApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var winner = await _context.Winners.FindAsync(id);
+            var winner = await _dbContext.Winners.FindAsync(id);
             if (winner != null)
             {
-                _context.Winners.Remove(winner);
+                _dbContext.Winners.Remove(winner);
             }
 
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool WinnerExists(int id)
         {
-            return _context.Winners.Any(e => e.Id == id);
+            return _dbContext.Winners.Any(e => e.Id == id);
         }
     }
 }

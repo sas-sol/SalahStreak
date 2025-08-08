@@ -1,0 +1,79 @@
+Demo: SalahStreak – Talk Track & Follow‑Along Steps
+
+1) Talk Track (60–90 seconds)
+- Purpose: Encourage consistent congregational salah using attendance streaks, rounds, and age‑grouped recognition.
+- What’s unique: Real biometric ingestion → deterministic scoring → auto round completion → transparent winners per age group.
+- Today’s demo: Generate thousands of records, process scores, complete a 40‑day round, show winners and diagnostics, and pull live-like BioTime transactions.
+- Status: MVP/POC built in ~56 hours. Solid foundation, some pragmatic shortcuts for demo reliability/perf.
+
+2) Live Demo Steps (5–7 minutes)
+- Demo → “Generate Massive Demo”: creates 40‑day calendar (±30 min windows), bulk participants, 10k+ logs, then processes scores, creates a matching round, and computes winners.
+- Demo → Diagnostic: confirm current round, participant totals, on-time percentages, sample logs and scores.
+- Winners → Index: verify winners populated per age group; ranks and scores visible.
+- Attendance Score → Index: search/paginate large data, confirm actual check‑in time and late flags.
+- Calendar → Index: confirm 40 days × 5 prayers/day with 30‑minute windows; search/sort by date.
+- Biometric Log → Index: review total logs; use search/sort.
+- Demo → “Fetch Biometric Transactions”: optional BioTime pull to display transactions in demo.
+
+3) Architecture Overview
+- Stack: ASP.NET Core MVC + EF Core (SQLite) + Hosted background services + Razor views + Bootstrap/JQuery (vanilla) for UI.
+- Data model:
+  • Participant, AgeGroup
+  • AttendanceCalendar (Date, ExpectedTime, TimeWindowMinutes)
+  • BiometricLog (ParticipantId, CheckInTime, DeviceId, RawData)
+  • AttendanceScore (per participant per calendar entry)
+  • Round (Start, End, Duration)
+  • Winner (per age group with Rank, FinalScore)
+  • Reward (optional catalog and fulfillment state)
+- Services:
+  • AttendanceScoringService: converts logs→scores with ±30‑minute windows; handles duplicates and late flags; client‑side ordering by proximity.
+  • RoundManagementService: creates rounds, aggregates scores, determines winners (≥195 threshold with demo fallback to top scorer if none eligible), auto‑completes expired rounds.
+  • BioTimeApiService: fetches JWT and transactions; used by BiometricPollingService.
+  • BiometricPollingService (hosted): periodically ingests new logs.
+  • ScoreProcessingService (hosted): batches new days with unprocessed logs and recalculates.
+  • RoundAutoManagementService (hosted): maintains round lifecycle automatically.
+- Controllers/Views:
+  • DemoController: one‑click demo orchestration, diagnostics, and helpers.
+  • Centralized table UX: BaseController + Shared/_DataTable.cshtml for pagination/search/export across all Index pages.
+
+4) Robustness & Design Highlights
+- Deterministic demo generation: fixed‑seed randomness for reproducible scores; guaranteed winners per age group (197 points), near‑miss second place (193).
+- Scoring correctness: checks valid window (±30 min) and late logs; closest‑to‑expected chosen; duplicates detected.
+- Round integrity: round dates align with the generated 40‑day calendar; winners processed immediately.
+- Pagination at scale: all heavy lists use a centralized client/server paging/search/sort, preventing UI lockups for demo‑sized data.
+- Fault‑tolerant ingestion: background services isolate polling and scoring; errors logged and retried later.
+
+5) Known Flaws / Pragmatic Compromises (MVP/POC; ~56 hours)
+- EF Core translations: some ordering (TimeSpan proximity) forced to client‑side to avoid SQLite limitations.
+- Demo data resets: massive demo may wipe and rebuild participants; fine for POC, not for production.
+- Validation & authN/authZ: minimal validation and no role‑based gates around demo actions.
+- Tests: limited/no automated tests; relies on diagnostics and manual verification screens.
+- Performance: bulk operations are acceptable for SQLite demo; production would require batching, indexes, and possibly a different DB.
+- Observability: basic logs; no metrics/tracing pipeline configured yet.
+
+6) Basic Stats / Telemetry (approximate, current snapshot)
+- Lines of code (representative):
+  • Controllers/DemoController.cs: ~900 LOC (orchestration, generators, diagnostics)
+  • Services/BioTimeApiService.cs: ~360 LOC (API integration)
+  • Services/AttendanceScoringService.cs: ~200+ LOC (scoring)
+  • Services/RoundManagementService.cs: ~250–300 LOC (rounds/winners)
+  • Program.cs: ~80–90 LOC (DI wiring, hosted services)
+- Central definitions:
+  • Shared/_DataTable.cshtml: central pagination/search/export UI
+  • Controllers/BaseController.cs: shared server‑side paging/search/sort helper
+  • Models/*: compact POCOs mapping to EF entities
+- Hosted services cadence:
+  • Scoring: ~every 2 minutes (batched new days)
+  • Polling: periodically fetches & stores new logs
+  • Round auto‑mgmt: daily checks for expirations/new round creation
+
+7) What “Production‑Hardening” Would Add
+- Replace demo resets with idempotent scripts and partial generators.
+- Strong authN/authZ, audit logging, and safety rails around destructive actions.
+- End‑to‑end telemetry: metrics, traces, dashboards; error budgets.
+- Indexing and DB tuning; migrate from SQLite to a production RDBMS.
+- Asynchronous pipelines and partitioned processing for very large orgs.
+- Automated test suite (unit/integration), seedable fixtures, and CI.
+
+8) One‑liner Summary
+A pragmatic, end‑to‑end MVP that proves the core loop—ingest → score → round → winners—at demo scale with reliable determinism, clear diagnostics, and centralized UX for handling large datasets.

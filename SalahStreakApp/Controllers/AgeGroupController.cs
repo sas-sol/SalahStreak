@@ -10,19 +10,86 @@ using SalahStreakApp.Models;
 
 namespace SalahStreakApp.Controllers
 {
-    public class AgeGroupController : Controller
+    public class AgeGroupController : BaseController
     {
-        private readonly ApplicationDbContext _context;
-
-        public AgeGroupController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public AgeGroupController(ApplicationDbContext dbContext, ILogger<AgeGroupController> logger)
+            : base(dbContext, logger) { }
 
         // GET: AgeGroup
         public async Task<IActionResult> Index()
         {
-            return View(await _context.AgeGroups.ToListAsync());
+            var ageGroups = await _dbContext.AgeGroups.ToListAsync();
+
+            var columns = new object[]
+            {
+                new { title = "ID", field = "id" },
+                new { title = "Name", field = "name" },
+                new { title = "Min Age", field = "minAge" },
+                new { title = "Max Age", field = "maxAge" },
+                new { title = "Description", field = "description" },
+                new { title = "Active", field = "isActive" },
+                new { title = "Created", field = "createdAt" },
+                new { title = "Updated", field = "updatedAt" },
+                new { title = "Actions", field = "actions" }
+            };
+
+            var data = ageGroups.Select(g => new
+            {
+                id = g.Id,
+                name = g.Name,
+                minAge = g.MinAge,
+                maxAge = g.MaxAge,
+                description = g.Description ?? "",
+                isActive = g.IsActive ? "Active" : "Inactive",
+                createdAt = g.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
+                updatedAt = g.UpdatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "N/A",
+                actions = $"<div class='btn-group'><button class='btn btn-sm btn-outline-primary dropdown-toggle' data-bs-toggle='dropdown'>Actions</button><ul class='dropdown-menu'><li><a class='dropdown-item' href='/AgeGroup/Edit/{g.Id}'>Edit</a></li><li><a class='dropdown-item' href='/AgeGroup/Details/{g.Id}'>Details</a></li><li><a class='dropdown-item' href='/AgeGroup/Delete/{g.Id}'>Delete</a></li></ul></div>"
+            }).ToList();
+
+            ViewData["TableId"] = "ageGroupsTable";
+            ViewData["Columns"] = columns;
+            ViewData["TableData"] = data;
+            ViewData["TableTitle"] = "Age Groups";
+            ViewData["ShowExport"] = true;
+            ViewData["ShowSearch"] = true;
+            ViewData["ShowRefresh"] = true;
+            ViewData["RefreshUrl"] = Url.Action("GetData", "AgeGroup");
+
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetData(int page = 1, int size = 25, string sortField = "Id", string sortOrder = "desc", string searchTerm = "")
+        {
+            IQueryable<AgeGroup> query = _dbContext.AgeGroups;
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(a => a.Name.Contains(searchTerm) || (a.Description ?? "").Contains(searchTerm));
+            }
+
+            IQueryable<AgeGroup> sortedQuery = sortField.ToLower() switch
+            {
+                "name" => sortOrder == "asc" ? query.OrderBy(a => a.Name) : query.OrderByDescending(a => a.Name),
+                "minage" => sortOrder == "asc" ? query.OrderBy(a => a.MinAge) : query.OrderByDescending(a => a.MinAge),
+                "maxage" => sortOrder == "asc" ? query.OrderBy(a => a.MaxAge) : query.OrderByDescending(a => a.MaxAge),
+                "isactive" => sortOrder == "asc" ? query.OrderBy(a => a.IsActive) : query.OrderByDescending(a => a.IsActive),
+                "createdat" => sortOrder == "asc" ? query.OrderBy(a => a.CreatedAt) : query.OrderByDescending(a => a.CreatedAt),
+                _ => sortOrder == "asc" ? query.OrderBy(a => a.Id) : query.OrderByDescending(a => a.Id)
+            };
+
+            return await GetTableDataAsync(sortedQuery, a => new
+            {
+                id = a.Id,
+                name = a.Name,
+                minAge = a.MinAge,
+                maxAge = a.MaxAge,
+                description = a.Description ?? "",
+                isActive = a.IsActive ? "Active" : "Inactive",
+                createdAt = a.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
+                updatedAt = a.UpdatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "N/A",
+                actions = $"<div class='btn-group'><button class='btn btn-sm btn-outline-primary dropdown-toggle' data-bs-toggle='dropdown'>Actions</button><ul class='dropdown-menu'><li><a class='dropdown-item' href='/AgeGroup/Edit/{a.Id}'>Edit</a></li><li><a class='dropdown-item' href='/AgeGroup/Details/{a.Id}'>Details</a></li><li><a class='dropdown-item' href='/AgeGroup/Delete/{a.Id}'>Delete</a></li></ul></div>"
+            }, page, size, sortField, sortOrder, searchTerm);
         }
 
         // GET: AgeGroup/Details/5
@@ -33,7 +100,7 @@ namespace SalahStreakApp.Controllers
                 return NotFound();
             }
 
-            var ageGroup = await _context.AgeGroups
+            var ageGroup = await _dbContext.AgeGroups
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ageGroup == null)
             {
@@ -58,8 +125,8 @@ namespace SalahStreakApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(ageGroup);
-                await _context.SaveChangesAsync();
+                _dbContext.Add(ageGroup);
+                await _dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(ageGroup);
@@ -73,7 +140,7 @@ namespace SalahStreakApp.Controllers
                 return NotFound();
             }
 
-            var ageGroup = await _context.AgeGroups.FindAsync(id);
+            var ageGroup = await _dbContext.AgeGroups.FindAsync(id);
             if (ageGroup == null)
             {
                 return NotFound();
@@ -97,8 +164,8 @@ namespace SalahStreakApp.Controllers
             {
                 try
                 {
-                    _context.Update(ageGroup);
-                    await _context.SaveChangesAsync();
+                    _dbContext.Update(ageGroup);
+                    await _dbContext.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -124,7 +191,7 @@ namespace SalahStreakApp.Controllers
                 return NotFound();
             }
 
-            var ageGroup = await _context.AgeGroups
+            var ageGroup = await _dbContext.AgeGroups
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ageGroup == null)
             {
@@ -139,19 +206,19 @@ namespace SalahStreakApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var ageGroup = await _context.AgeGroups.FindAsync(id);
+            var ageGroup = await _dbContext.AgeGroups.FindAsync(id);
             if (ageGroup != null)
             {
-                _context.AgeGroups.Remove(ageGroup);
+                _dbContext.AgeGroups.Remove(ageGroup);
             }
 
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool AgeGroupExists(int id)
         {
-            return _context.AgeGroups.Any(e => e.Id == id);
+            return _dbContext.AgeGroups.Any(e => e.Id == id);
         }
     }
 }

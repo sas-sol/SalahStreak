@@ -1712,7 +1712,7 @@ Expr = jQuery.expr = {
 					return !!elem.parentNode;
 				} :
 
-				function( elem, _context, xml ) {
+				function( elem, _dbContext, xml ) {
 					var cache, outerCache, node, nodeIndex, start,
 						dir = simple !== forward ? "nextSibling" : "previousSibling",
 						parent = elem.parentNode,
@@ -1862,7 +1862,7 @@ Expr = jQuery.expr = {
 				matcher = compile( selector.replace( rtrimCSS, "$1" ) );
 
 			return matcher[ expando ] ?
-				markFunction( function( seed, matches, _context, xml ) {
+				markFunction( function( seed, matches, _dbContext, xml ) {
 					var elem,
 						unmatched = matcher( seed, null, xml, [] ),
 						i = seed.length;
@@ -1874,7 +1874,7 @@ Expr = jQuery.expr = {
 						}
 					}
 				} ) :
-				function( elem, _context, xml ) {
+				function( elem, _dbContext, xml ) {
 					input[ 0 ] = elem;
 					matcher( input, null, xml, results );
 

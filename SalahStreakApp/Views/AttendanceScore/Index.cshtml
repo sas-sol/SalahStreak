@@ -1,97 +1,14 @@
-@model IEnumerable<SalahStreakApp.Models.AttendanceScore>
-
 @{
-     ;
+    ViewData["Title"] = "Attendance Scores";
 }
 
-<!DOCTYPE html>
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2>Attendance Scores</h2>
+            <a asp-action="Create" class="btn btn-primary">Create New</a>
+        </div>
+    </div>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Participant)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AttendanceCalendar)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Score)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ActualCheckInTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BiometricLog)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsLate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsDuplicate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Notes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Participant.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AttendanceCalendar.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Score)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ActualCheckInTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BiometricLog.DeviceId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsLate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDuplicate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Notes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedAt)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-</body>
-</html>
+    @await Html.PartialAsync("_DataTable")
+</div>

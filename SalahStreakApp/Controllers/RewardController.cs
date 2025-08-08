@@ -10,20 +10,85 @@ using SalahStreakApp.Models;
 
 namespace SalahStreakApp.Controllers
 {
-    public class RewardController : Controller
+    public class RewardController : BaseController
     {
-        private readonly ApplicationDbContext _context;
-
-        public RewardController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public RewardController(ApplicationDbContext dbContext, ILogger<RewardController> logger)
+            : base(dbContext, logger) { }
 
         // GET: Reward
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Rewards.Include(r => r.AgeGroup);
-            return View(await applicationDbContext.ToListAsync());
+            var rewards = await _dbContext.Rewards.Include(r => r.AgeGroup).ToListAsync();
+
+            var columns = new object[]
+            {
+                new { title = "ID", field = "id" },
+                new { title = "Title", field = "title" },
+                new { title = "Age Group", field = "ageGroup" },
+                new { title = "Qty", field = "qty" },
+                new { title = "Status", field = "status" },
+                new { title = "Delivered At", field = "deliveredAt" },
+                new { title = "Created", field = "createdAt" },
+                new { title = "Updated", field = "updatedAt" },
+                new { title = "Actions", field = "actions" }
+            };
+
+            var data = rewards.Select(r => new
+            {
+                id = r.Id,
+                title = r.Title,
+                ageGroup = r.AgeGroup?.Name ?? "",
+                qty = r.Quantity,
+                status = r.DeliveryStatus,
+                deliveredAt = r.DeliveredAt?.ToString("yyyy-MM-dd HH:mm") ?? "",
+                createdAt = r.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
+                updatedAt = r.UpdatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "N/A",
+                actions = $"<div class='btn-group'><button class='btn btn-sm btn-outline-primary dropdown-toggle' data-bs-toggle='dropdown'>Actions</button><ul class='dropdown-menu'><li><a class='dropdown-item' href='/Reward/Edit/{r.Id}'>Edit</a></li><li><a class='dropdown-item' href='/Reward/Details/{r.Id}'>Details</a></li><li><a class='dropdown-item' href='/Reward/Delete/{r.Id}'>Delete</a></li></ul></div>"
+            }).ToList();
+
+            ViewData["TableId"] = "rewardsTable";
+            ViewData["Columns"] = columns;
+            ViewData["TableData"] = data;
+            ViewData["TableTitle"] = "Rewards";
+            ViewData["ShowExport"] = true;
+            ViewData["ShowSearch"] = true;
+            ViewData["ShowRefresh"] = true;
+            ViewData["RefreshUrl"] = Url.Action("GetData", "Reward");
+
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetData(int page = 1, int size = 25, string sortField = "Id", string sortOrder = "desc", string searchTerm = "")
+        {
+            IQueryable<Reward> query = _dbContext.Rewards.Include(r => r.AgeGroup);
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(r => r.Title.Contains(searchTerm) || (r.Description ?? "").Contains(searchTerm));
+            }
+
+            IQueryable<Reward> sortedQuery = sortField.ToLower() switch
+            {
+                "title" => sortOrder == "asc" ? query.OrderBy(r => r.Title) : query.OrderByDescending(r => r.Title),
+                "qty" => sortOrder == "asc" ? query.OrderBy(r => r.Quantity) : query.OrderByDescending(r => r.Quantity),
+                "status" => sortOrder == "asc" ? query.OrderBy(r => r.DeliveryStatus) : query.OrderByDescending(r => r.DeliveryStatus),
+                "createdat" => sortOrder == "asc" ? query.OrderBy(r => r.CreatedAt) : query.OrderByDescending(r => r.CreatedAt),
+                _ => sortOrder == "asc" ? query.OrderBy(r => r.Id) : query.OrderByDescending(r => r.Id)
+            };
+
+            return await GetTableDataAsync(sortedQuery, r => new
+            {
+                id = r.Id,
+                title = r.Title,
+                ageGroup = r.AgeGroup.Name,
+                qty = r.Quantity,
+                status = r.DeliveryStatus,
+                deliveredAt = r.DeliveredAt?.ToString("yyyy-MM-dd HH:mm") ?? "",
+                createdAt = r.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
+                updatedAt = r.UpdatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "N/A",
+                actions = $"<div class='btn-group'><button class='btn btn-sm btn-outline-primary dropdown-toggle' data-bs-toggle='dropdown'>Actions</button><ul class='dropdown-menu'><li><a class='dropdown-item' href='/Reward/Edit/{r.Id}'>Edit</a></li><li><a class='dropdown-item' href='/Reward/Details/{r.Id}'>Details</a></li><li><a class='dropdown-item' href='/Reward/Delete/{r.Id}'>Delete</a></li></ul></div>"
+            }, page, size, sortField, sortOrder, searchTerm);
         }
 
         // GET: Reward/Details/5
@@ -34,7 +99,7 @@ namespace SalahStreakApp.Controllers
                 return NotFound();
             }
 
-            var reward = await _context.Rewards
+            var reward = await _dbContext.Rewards
                 .Include(r => r.AgeGroup)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (reward == null)
@@ -48,7 +113,7 @@ namespace SalahStreakApp.Controllers
         // GET: Reward/Create
         public IActionResult Create()
         {
-            ViewData["AgeGroupId"] = new SelectList(_context.AgeGroups, "Id", "Name");
+            ViewData["AgeGroupId"] = new SelectList(_dbContext.AgeGroups, "Id", "Name");
             return View();
         }
 
@@ -61,11 +126,11 @@ namespace SalahStreakApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(reward);
-                await _context.SaveChangesAsync();
+                _dbContext.Add(reward);
+                await _dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AgeGroupId"] = new SelectList(_context.AgeGroups, "Id", "Name", reward.AgeGroupId);
+            ViewData["AgeGroupId"] = new SelectList(_dbContext.AgeGroups, "Id", "Name", reward.AgeGroupId);
             return View(reward);
         }
 
@@ -77,12 +142,12 @@ namespace SalahStreakApp.Controllers
                 return NotFound();
             }
 
-            var reward = await _context.Rewards.FindAsync(id);
+            var reward = await _dbContext.Rewards.FindAsync(id);
             if (reward == null)
             {
                 return NotFound();
             }
-            ViewData["AgeGroupId"] = new SelectList(_context.AgeGroups, "Id", "Name", reward.AgeGroupId);
+            ViewData["AgeGroupId"] = new SelectList(_dbContext.AgeGroups, "Id", "Name", reward.AgeGroupId);
             return View(reward);
         }
 
@@ -102,8 +167,8 @@ namespace SalahStreakApp.Controllers
             {
                 try
                 {
-                    _context.Update(reward);
-                    await _context.SaveChangesAsync();
+                    _dbContext.Update(reward);
+                    await _dbContext.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -118,7 +183,7 @@ namespace SalahStreakApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AgeGroupId"] = new SelectList(_context.AgeGroups, "Id", "Name", reward.AgeGroupId);
+            ViewData["AgeGroupId"] = new SelectList(_dbContext.AgeGroups, "Id", "Name", reward.AgeGroupId);
             return View(reward);
         }
 
@@ -130,7 +195,7 @@ namespace SalahStreakApp.Controllers
                 return NotFound();
             }
 
-            var reward = await _context.Rewards
+            var reward = await _dbContext.Rewards
                 .Include(r => r.AgeGroup)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (reward == null)
@@ -146,19 +211,19 @@ namespace SalahStreakApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var reward = await _context.Rewards.FindAsync(id);
+            var reward = await _dbContext.Rewards.FindAsync(id);
             if (reward != null)
             {
-                _context.Rewards.Remove(reward);
+                _dbContext.Rewards.Remove(reward);
             }
 
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool RewardExists(int id)
         {
-            return _context.Rewards.Any(e => e.Id == id);
+            return _dbContext.Rewards.Any(e => e.Id == id);
         }
     }
 }
